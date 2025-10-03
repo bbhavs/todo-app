@@ -1,86 +1,168 @@
+/* ===== Reset & Base Styles ===== */
 body {
-    font-family: sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #f4f6f8;
+  color: #333;
 }
 
-.container {
-    background: #fff;
-    padding: 20px 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 400px;
+.app-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
 }
 
-h1 {
-    text-align: center;
-    color: #333;
+h1.title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #2d89ef;
 }
 
-.input-section {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+h2 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  color: #555;
 }
 
-#taskInput {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+/* ===== Task Input ===== */
+.task-input {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr auto;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-#addTaskBtn {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.task-input input,
+.task-input select,
+.task-input button {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
 }
 
-#addTaskBtn:hover {
-    background-color: #0056b3;
+.task-input button {
+  background: #2d89ef;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-#taskList {
-    list-style: none;
-    padding: 0;
+.task-input button:hover {
+  background: #1a5fc3;
 }
 
-#taskList li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+/* ===== Task Lists ===== */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-#taskList li:last-child {
-    border-bottom: none;
+.task-card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.task-title.completed {
-    text-decoration: line-through;
-    color: #888;
+.task-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
 }
 
-.task-buttons button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2em;
-    margin-left: 5px;
+.task-card.completed {
+  background: #e6f9e6;
+  opacity: 0.9;
 }
 
-.toggle-btn {
-    color: green;
+/* ===== Task Info ===== */
+.task-info {
+  flex-grow: 1;
+}
+
+.task-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.task-desc {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 2px;
+}
+
+.task-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.task-tag.work { background: #d1e7ff; color: #084298; }
+.task-tag.study { background: #e2f0d9; color: #0f5132; }
+.task-tag.personal { background: #fde2e2; color: #842029; }
+
+.task-date {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 5px;
+}
+
+/* ===== Task Actions ===== */
+.task-actions button {
+  margin-left: 8px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.complete-btn {
+  background: #28a745;
+  color: white;
+}
+
+.complete-btn:hover {
+  background: #218838;
 }
 
 .delete-btn {
-    color: red;
+  background: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #b02a37;
+}
+
+/* ===== Empty State ===== */
+.task-list:empty::before {
+  content: "No tasks yet!";
+  color: #999;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 650px) {
+  .task-input {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .task-actions button {
+    padding: 5px 8px;
+    font-size: 0.85rem;
+  }
 }

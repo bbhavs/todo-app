@@ -1,66 +1,114 @@
-const API_URL = "http://localhost:5000/tasks";
+document.addEventListener("DOMContentLoaded", () => {
+  const taskTitle = document.getElementById("taskTitle");
+  const taskDesc = document.getElementById("taskDesc");
+  const taskTag = document.getElementById("taskTag");
+  const taskDate = document.getElementById("taskDate");
+  const addTaskBtn = document.getElementById("addTask");
 
-const taskInput = document.getElementById("taskInput");
-const addTaskBtn = document.getElementById("addTaskBtn");
-const taskList = document.getElementById("taskList");
+  const taskList = document.getElementById("taskList");
+  const completedList = document.getElementById("completedList");
 
-// Function to fetch and display tasks
-const fetchTasks = async () => {
-    const response = await fetch(API_URL);
-    const tasks = await response.json();
-    renderTasks(tasks);
-};
+  // Load tasks from localStorage
+  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  renderTasks();
 
-// Function to render tasks on the page
-const renderTasks = (tasks) => {
+  // Add new task
+  addTaskBtn.addEventListener("click", () => {
+    if (taskTitle.value.trim() === "") {
+      alert("Please enter a task title");
+      return;
+    }
+
+    const task = {
+      id: Date.now(),
+      title: taskTitle.value,
+      desc: taskDesc.value,
+      tag: taskTag.value,
+      date: taskDate.value,
+      completed: false,
+    };
+
+    tasks.push(task);
+    saveTasks();
+    renderTasks();
+
+    // Clear inputs
+    taskTitle.value = "";
+    taskDesc.value = "";
+    taskTag.value = "work";
+    taskDate.value = "";
+  });
+
+  // Save to localStorage
+  function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
+
+  // Render tasks
+  function renderTasks() {
     taskList.innerHTML = "";
-    tasks.forEach(task => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-            <span class="task-title ${task.status ? "completed" : ""}">${task.title}</span>
-            <div class="task-buttons">
-                <button class="toggle-btn" data-id="${task.id}">✔</button>
-                <button class="delete-btn" data-id="${task.id}">❌</button>
-            </div>
-        `;
-        taskList.appendChild(li);
+    completedList.innerHTML = "";
+
+    tasks.forEach((task) => {
+      const taskCard = document.createElement("div");
+      taskCard.classList.add("task-card");
+
+      const info = document.createElement("div");
+      info.classList.add("task-info");
+
+      const title = document.createElement("div");
+      title.classList.add("task-title");
+      title.textContent = task.title;
+
+      const desc = document.createElement("div");
+      desc.classList.add("task-desc");
+      desc.textContent = task.desc;
+
+      const tag = document.createElement("span");
+      tag.classList.add("task-tag", task.tag);
+      tag.textContent = task.tag;
+
+      const date = document.createElement("div");
+      date.classList.add("task-date");
+      if (task.date) date.textContent = "📅 " + task.date;
+
+      info.appendChild(title);
+      if (task.desc) info.appendChild(desc);
+      info.appendChild(tag);
+      if (task.date) info.appendChild(date);
+
+      const actions = document.createElement("div");
+      actions.classList.add("task-actions");
+
+      const completeBtn = document.createElement("button");
+      completeBtn.textContent = "✓";
+      completeBtn.classList.add("complete-btn");
+      completeBtn.addEventListener("click", () => {
+        task.completed = !task.completed;
+        saveTasks();
+        renderTasks();
+      });
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "✕";
+      deleteBtn.classList.add("delete-btn");
+      deleteBtn.addEventListener("click", () => {
+        tasks = tasks.filter((t) => t.id !== task.id);
+        saveTasks();
+        renderTasks();
+      });
+
+      actions.appendChild(completeBtn);
+      actions.appendChild(deleteBtn);
+
+      taskCard.appendChild(info);
+      taskCard.appendChild(actions);
+
+      if (task.completed) {
+        completedList.appendChild(taskCard);
+      } else {
+        taskList.appendChild(taskCard);
+      }
     });
-};
-
-// Add new task
-addTaskBtn.addEventListener("click", async () => {
-    const title = taskInput.value.trim();
-    if (title) {
-        await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title })
-        });
-        taskInput.value = "";
-        fetchTasks();
-    }
+  }
 });
-
-// Toggle or delete a task
-taskList.addEventListener("click", async (e) => {
-    const target = e.target;
-    const id = target.dataset.id;
-    if (target.classList.contains("toggle-btn")) {
-        const taskTitle = target.parentElement.previousElementSibling;
-        const newStatus = !taskTitle.classList.contains("completed");
-        await fetch(`${API_URL}/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: newStatus })
-        });
-        fetchTasks();
-    } else if (target.classList.contains("delete-btn")) {
-        await fetch(`${API_URL}/${id}`, {
-            method: "DELETE"
-        });
-        fetchTasks();
-    }
-});
-
-// Initial fetch
-fetchTasks();
